@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:texttranslator/Google_transalate/Controller/google_controller2.dart';
 
-class Myhomepage22 extends StatelessWidget {
+  class Myhomepage22 extends StatelessWidget {
   Myhomepage22({super.key});
   final Languagecontroller = Get.put(Transilator());
 
@@ -74,12 +74,7 @@ class Myhomepage22 extends StatelessWidget {
         Obx(
               () => ElevatedButton.icon(
             onPressed: () {
-              controller.play.value
-                  ? controller.pause()
-                  : controller.speak();
-              controller.flutterTts.setCompletionHandler(() {
-                controller.play.value!=controller.play.value;
-              },);
+              controller.play.value ? controller.pause() : controller.speak();
             },
             icon: Icon(controller.play.value ? Icons.pause : Icons.volume_up),
             label: Text(controller.play.value ? "Pause" : "Play"),
@@ -93,6 +88,7 @@ class Myhomepage22 extends StatelessWidget {
       ],
     );
   }
+
 
   Widget _buildSliderSection(
       String label, RxDouble value, double min, double max) {

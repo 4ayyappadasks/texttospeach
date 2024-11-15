@@ -47,7 +47,7 @@ class Transilator extends GetxController {
       if (kDebugMode) {
         print("Utterance completed. Running stop handler.");
       }
-      stop();
+      stop(); // Automatically handle stop when utterance completes
     });
 
     flutterTts.setCancelHandler(() {
@@ -86,17 +86,14 @@ class Transilator extends GetxController {
 
     await flutterTts.speak(textToSpeak);
     play.value = true;
-    // flutterTts.setCompletionHandler(()  {
-    //   print("object");
-    // });
   }
 
-   stop() async {
+  Future<void> stop() async {
     await flutterTts.stop();
     play.value = false;
   }
 
-  void pause() async {
+  Future<void> pause() async {
     await flutterTts.pause();
     play.value = false;
   }
