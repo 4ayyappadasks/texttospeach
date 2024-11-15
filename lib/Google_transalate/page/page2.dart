@@ -26,34 +26,34 @@ class Myhomepage22 extends StatelessWidget {
               _buildControlButtons(Languagecontroller),
               const Divider(height: 40),
               _buildLanguageSelector(Languagecontroller),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Languagecontroller.transalatetext();
-                  Languagecontroller.inputlanguage.value = Languagecontroller.outputlanguage.value;
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 15,
-                    horizontal: 30,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  "Translate",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
+              // const SizedBox(height: 20),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Languagecontroller.transalatetext();
+              //     Languagecontroller.inputlanguage.value = Languagecontroller.outputlanguage.value;
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     padding: const EdgeInsets.symmetric(
+              //       vertical: 15,
+              //       horizontal: 30,
+              //     ),
+              //     shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(10),
+              //     ),
+              //   ),
+              //   child: const Text(
+              //     "Translate",
+              //     style: TextStyle(fontSize: 16),
+              //   ),
+              // ),
               const SizedBox(height: 20),
               const Divider(height: 40),
-              _buildSliderSection(
-                "Pitch",
-                Languagecontroller.pitch,
-                0.5,
-                2.0,
-              ),
+              // _buildSliderSection(
+              //   "Pitch",
+              //   Languagecontroller.pitch,
+              //   0.5,
+              //   2.0,
+              // ),
               _buildSliderSection(
                 "Speech Rate",
                 Languagecontroller.speachRate,
@@ -73,9 +73,14 @@ class Myhomepage22 extends StatelessWidget {
       children: [
         Obx(
               () => ElevatedButton.icon(
-            onPressed: () => controller.play.value
-                ? controller.pause()
-                : controller.speak(),
+            onPressed: () {
+              controller.play.value
+                  ? controller.pause()
+                  : controller.speak();
+              controller.flutterTts.setCompletionHandler(() {
+                controller.play.value!=controller.play.value;
+              },);
+            },
             icon: Icon(controller.play.value ? Icons.pause : Icons.volume_up),
             label: Text(controller.play.value ? "Pause" : "Play"),
           ),
@@ -103,11 +108,18 @@ class Myhomepage22 extends StatelessWidget {
             Expanded(
               child: Obx(
                     () => Slider(
-                  value: value.value,
-                  min: min,
-                  max: max,
-                  onChanged: (newValue) => value.value = newValue,
-                ),
+                      value: value.value,
+                      min: min,
+                      max: max,
+                      onChanged: (newValue) async {
+                        value.value = newValue;
+                        if (Languagecontroller.play.value) {
+                          await Languagecontroller.stop();
+                          Languagecontroller.initSetting();
+                          Languagecontroller.speak();
+                        }
+                      },
+                    ),
               ),
             ),
             Obx(
@@ -130,22 +142,21 @@ class Myhomepage22 extends StatelessWidget {
         //   "Input Language",
         //   controller.inputlanguage,
         // ),
-        Column(
-          children: [
-            Text(
-              "Input Language",
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Obx(
-                  () =>  Text(
-                    controller.inputlanguage.value,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-            ),
-          ],
-        ),
-        const Icon(Icons.arrow_forward, size: 24),
+        // Column(
+        //   children: [
+        //     Text(
+        //       "Input Language",
+        //       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        //     ),
+        //     const SizedBox(height: 8),
+        //     Obx(
+        //           () =>  Text(
+        //             controller.inputlanguage.value,
+        //             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        //           ),
+        //     ),
+        //   ],
+        // ),
         _buildLanguageDropdown(
           "Output Language",
           controller.outputlanguage,
@@ -197,6 +208,8 @@ class Myhomepage22 extends StatelessWidget {
                 Languagecontroller.speachRate.value = settings['rate']!;
                 Languagecontroller.initSetting();
               }
+              Languagecontroller.stop();
+              Languagecontroller.transalatetext();
             },
           ),
         ),

@@ -7,7 +7,7 @@ import 'package:texttranslator/Google_transalate/model/model.dart';
 
 class Transilator extends GetxController {
   var pitch = 1.0.obs;
-  var speachRate = 1.0.obs;
+  var speachRate = 0.6.obs;
   var inputtext = "".obs;
   var translatedText = "".obs;
   var inputlanguage = "en".obs;
@@ -44,7 +44,10 @@ class Transilator extends GetxController {
 
   void _initTtsHandlers() {
     flutterTts.setCompletionHandler(() {
-      play.value = false;
+      if (kDebugMode) {
+        print("Utterance completed. Running stop handler.");
+      }
+      stop();
     });
 
     flutterTts.setCancelHandler(() {
@@ -66,6 +69,15 @@ class Transilator extends GetxController {
     await flutterTts.setLanguage(outputlanguage.value);
   }
 
+  // void speak() async {
+  //   initSetting();
+  //   String textToSpeak = translatedText.value.isNotEmpty
+  //       ? translatedText.value
+  //       : inputtext.value;
+  //
+  //   await flutterTts.speak(textToSpeak);
+  //   play.value = true;
+  // }
   void speak() async {
     initSetting();
     String textToSpeak = translatedText.value.isNotEmpty
@@ -74,9 +86,12 @@ class Transilator extends GetxController {
 
     await flutterTts.speak(textToSpeak);
     play.value = true;
+    // flutterTts.setCompletionHandler(()  {
+    //   print("object");
+    // });
   }
 
-  void stop() async {
+   stop() async {
     await flutterTts.stop();
     play.value = false;
   }
@@ -109,6 +124,7 @@ class Transilator extends GetxController {
       if (response.statusCode == 200) {
         languagemodel = languageFromJson(response.body);
         inputtext.value = languagemodel?.data.text ?? "";
+        transalatetext();
       } else {
         throw Exception("Failed to fetch data");
       }

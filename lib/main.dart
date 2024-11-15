@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:texttranslator/Google_transalate/page/page2.dart';
+import 'package:texttranslator/test.dart';
 
 import 'Transilate/page.dart';
 
@@ -13,7 +14,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Myhomepage22()
+      home: HomePage()
+      // Myhomepage22()
       // HomeScreen(),
     );
   }
