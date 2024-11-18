@@ -58,7 +58,7 @@ This Flutter application fetches text data from an API, translates it to the sel
 
 3. **Select Language**: Use the language selector to choose the language you want the text to be translated into.
 
-4. **Listen to the Translation**: Press the "Speak" button to hear the translated text aloud.
+4. **Listen to the Translation**: Press the "Speaker" button to hear the translated text aloud.
 
 ## Code Dependencies
 
