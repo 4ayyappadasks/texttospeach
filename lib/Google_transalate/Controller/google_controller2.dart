@@ -47,7 +47,7 @@ class Transilator extends GetxController {
       if (kDebugMode) {
         print("Utterance completed. Running stop handler.");
       }
-      stop(); // Automatically handle stop when utterance completes
+      stop();
     });
 
     flutterTts.setCancelHandler(() {
