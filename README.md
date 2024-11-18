@@ -1,6 +1,4 @@
 
----
-
 # Flutter Translation and Speech App
 
 This Flutter application fetches text data from an API, translates it to the selected language, and allows users to hear the translated text using Text-to-Speech. The app utilizes the following Flutter packages for seamless functionality:
@@ -208,11 +206,6 @@ class _TranslationScreenState extends State<TranslationScreen> {
 
 Feel free to fork this repository and create pull requests for improvements. Contributions are always welcome.
 
-## License
 
-This project is open-source and available under the MIT License. See the [LICENSE](LICENSE) file for more information.
-
----
-
-This README template can be adjusted based on further customizations or project-specific details!
+Images
 ![image Alt](https://github.com/4ayyappadasks/texttospeach/blob/f07803758bdccac8794e7a137e0cdc6b4b325c12/ss/banner.jpg)
