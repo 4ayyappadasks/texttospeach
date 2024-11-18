@@ -13,8 +13,6 @@ class Transilator extends GetxController with WidgetsBindingObserver {
   var translatedText = "".obs;
   var inputlanguage = "en".obs;
   var outputlanguage = "hi".obs;
-  var currentWordIndex = 0.obs;
-  var isSpeaking = false.obs;
   var apiload = false.obs;
   var play = false.obs;
   var isTranslating = false.obs;
