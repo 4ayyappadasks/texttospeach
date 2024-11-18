@@ -24,7 +24,7 @@ This Flutter application fetches text data from an API, translates it to the sel
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/your-username/flutter-translation-speech-app.git
+   git clone https://github.com/4ayyappadasks/texttospeach
    ```
 
 2. Navigate to the project directory:
