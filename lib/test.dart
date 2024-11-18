@@ -1,189 +1,101 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:translator/translator.dart';
+import 'package:http/http.dart' as http;
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class TranslationScreen extends StatefulWidget {
+  const TranslationScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  _TranslationScreenState createState() => _TranslationScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
-  TextEditingController text = TextEditingController();
-  double volume=.5;
-  String language='English';
-  String selectedLanguage='en-US';
+class _TranslationScreenState extends State<TranslationScreen> {
+  String originalText = "";
+  String translatedText = "";
+  String targetLanguage = "ml";
+  var pitch = 1.0;
+  var speechRate = 0.6;
+  final translator = GoogleTranslator();
+  final FlutterTts flutterTts = FlutterTts();
 
-  bool isPlaying = false;
-  final speech=FlutterTts();
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+    initTTSSettings();
+  }
+
+  Future<void> initTTSSettings() async {
+    await flutterTts.setVolume(1.0);
+    await flutterTts.setPitch(pitch);
+    await flutterTts.setSpeechRate(speechRate);
+  }
+
+  Future<void> fetchData() async {
+    try {
+      final response = await http.get(Uri.parse('https://dummyjson.com/c/b5c4-a125-4d3b-866d'));
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        String fetchedText = jsonResponse['data']['text'];
+        setState(() {
+          originalText = fetchedText;
+        });
+        translateText(fetchedText, targetLanguage);
+      } else {
+        throw Exception('Failed to load data: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
+
+  Future<void> translateText(String text, String targetLanguage) async {
+    try {
+      var translation = await translator.translate(text, to: targetLanguage);
+      setState(() {
+        translatedText = translation.text;
+      });
+    } catch (e) {
+      print('Error translating text: $e');
+    }
+  }
+
+
+  Future<void> speakText(String text) async {
+    try {
+      await flutterTts.setLanguage(targetLanguage);
+      await flutterTts.speak(text);
+    } catch (e) {
+      print('Error during speech synthesis: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'VoiceUp',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.blue,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.white,
-          ),
-          onPressed: () {},
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
+      appBar: AppBar(title: const Text('Translation and Speech App')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Original Text:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(originalText.isEmpty ? 'Loading...' : originalText, style: const TextStyle(fontSize: 16)),
+                const SizedBox(height: 20),
+                const Text('Translated Text:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(translatedText.isEmpty ? 'Translating...' : translatedText, style: const TextStyle(fontSize: 16)),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: translatedText.isNotEmpty ? () => speakText(translatedText) : null,
+                  child: const Text('Speak Translation'),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        maxLength: null,
-                        maxLines: null,
-                        controller: text,
-                        decoration: InputDecoration(
-                          hintText: 'Type or paste text to convert to speech',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      DropdownButton<String>(
-                        value: language,
-                        onChanged: (newLang) async {
-                          setState(() {
-                            language=newLang!;
-                          });
-
-                          switch(language){
-                            case 'English':
-                              setState(() {
-                                selectedLanguage='en-US';
-                              });
-                              break;
-                            case 'Spanish':
-                              setState(() {
-                                selectedLanguage='es-ES';
-                              });
-                              break;
-                            case 'French':
-                              setState(() {
-                                selectedLanguage='fr-FR';
-                              });
-                              break;
-
-                          }
-                        },
-                        items: ['English', 'Spanish', 'French'].map((language) {
-                          return DropdownMenuItem<String>(
-                            value: language,
-                            child: Text(language),
-                          );
-                        }).toList(),
-                      ),
-                      Slider(
-                        value: volume,
-                        thumbColor: Colors.redAccent,
-                        activeColor: Colors.blue,
-                        onChanged: (newVolume) {
-                          setState(() {
-                            volume=newVolume;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _buildButton(Icons.play_arrow, 'Play', Colors.green,
-                          () async {
-                        if(isPlaying){
-                          await speech.pause();
-                        }else{
-                          await speech.setLanguage(selectedLanguage);
-                          await speech.setVolume(volume);
-                          await speech.speak(text.text);
-
-                        }
-                        setState(() {
-                          isPlaying=!isPlaying;
-                        });
-                        speech.setCompletionHandler(() {
-                          setState(() {
-                            isPlaying=!isPlaying;
-                          });
-                          print("sdfdfgdfgdfg");
-                        });
-                      }, isPlaying),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  _buildButton(
-                      Icons.stop, 'Stop', Colors.red, () async {
-                    speech.stop();
-                    setState(() {
-                      isPlaying=false;
-                    });
-                  }, false),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildButton(IconData icon, String label, Color color,
-      VoidCallback onPressed, bool isPlay) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(10.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: MaterialButton(
-        onPressed: onPressed,
-        child: Row(
-          children: [
-            Icon(
-              isPlay ? Icons.pause : icon,
-              color: isPlay ? Colors.orange : Colors.white,
+              ],
             ),
-            const SizedBox(width: 5.0),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

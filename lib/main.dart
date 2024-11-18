@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:texttranslator/Google_transalate/page/page2.dart';
+import 'package:texttranslator/test.dart';
 
 void main() {
   runApp(MyApp());
@@ -37,8 +38,8 @@ class MyApp extends StatelessWidget {
             thumbColor: Color(0xFF1B6535),
           ),
         ),
-        home:
-      Myhomepage22()
+        home:TranslationScreen()
+      // Myhomepage22()
       // HomeScreen(),
     );
   }
