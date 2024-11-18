@@ -1,4 +1,3 @@
-Here’s a standard README file for your Flutter project:
 
 ---
 
