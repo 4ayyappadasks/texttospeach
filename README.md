@@ -202,10 +202,5 @@ class _TranslationScreenState extends State<TranslationScreen> {
 
 ```
 
-## Contributing
-
-Feel free to fork this repository and create pull requests for improvements. Contributions are always welcome.
-
-
 Images
 ![image Alt](https://github.com/4ayyappadasks/texttospeach/blob/f07803758bdccac8794e7a137e0cdc6b4b325c12/ss/banner.jpg)

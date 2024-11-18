@@ -38,8 +38,9 @@ class MyApp extends StatelessWidget {
             thumbColor: Color(0xFF1B6535),
           ),
         ),
-        home:TranslationScreen()
-      // Myhomepage22()
+        home:
+        // TranslationScreen()
+      Myhomepage22()
       // HomeScreen(),
     );
   }
