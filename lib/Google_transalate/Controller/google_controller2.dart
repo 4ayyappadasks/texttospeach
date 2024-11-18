@@ -1,17 +1,20 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 import 'package:translator/translator.dart';
 import 'package:http/http.dart' as http;
 import 'package:texttranslator/Google_transalate/model/model.dart';
 
-class Transilator extends GetxController {
+class Transilator extends GetxController with WidgetsBindingObserver {
   var pitch = 1.0.obs;
   var speachRate = 0.6.obs;
   var inputtext = "".obs;
   var translatedText = "".obs;
   var inputlanguage = "en".obs;
   var outputlanguage = "hi".obs;
+  var currentWordIndex = 0.obs;
+  var isSpeaking = false.obs;
   var apiload = false.obs;
   var play = false.obs;
   var isTranslating = false.obs;
@@ -38,15 +41,33 @@ class Transilator extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _initTtsHandlers();
+    WidgetsBinding.instance.addObserver(this);
     Apicall();
   }
 
-  void _initTtsHandlers() {
+  @override
+  void onReady() {
+    super.onReady();
+    initTtsHandlers();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      initTtsHandlers();
+    }
+  }
+
+  void initTtsHandlers() {
+    flutterTts = FlutterTts();
+
     flutterTts.setCompletionHandler(() {
-      if (kDebugMode) {
-        print("Utterance completed. Running stop handler.");
-      }
       stop();
     });
 
@@ -69,15 +90,6 @@ class Transilator extends GetxController {
     await flutterTts.setLanguage(outputlanguage.value);
   }
 
-  // void speak() async {
-  //   initSetting();
-  //   String textToSpeak = translatedText.value.isNotEmpty
-  //       ? translatedText.value
-  //       : inputtext.value;
-  //
-  //   await flutterTts.speak(textToSpeak);
-  //   play.value = true;
-  // }
   void speak() async {
     initSetting();
     String textToSpeak = translatedText.value.isNotEmpty
@@ -117,7 +129,8 @@ class Transilator extends GetxController {
   void Apicall() async {
     try {
       apiload.value = true;
-      var response = await http.get(Uri.parse("https://dummyjson.com/c/b5c4-a125-4d3b-866d"));
+      var response =
+      await http.get(Uri.parse("https://dummyjson.com/c/b5c4-a125-4d3b-866d"));
       if (response.statusCode == 200) {
         languagemodel = languageFromJson(response.body);
         inputtext.value = languagemodel?.data.text ?? "";
