@@ -20,7 +20,7 @@ class Myhomepage22 extends StatelessWidget {
         child: Obx(
               () => Languagecontroller.apiload.value
               ? const Center(child: CircularProgressIndicator())
-              :  _buildTranslationDisplay(Languagecontroller),
+              : _buildTranslationDisplay(Languagecontroller),
         ),
       ),
     );
@@ -29,16 +29,69 @@ class Myhomepage22 extends StatelessWidget {
   Widget _buildControlButtons(Transilator controller) {
     return Row(
       children: [
-        _buildLanguageDropdown(controller.outputlanguage,
-          controller.inputlanguage,),
-        Spacer(),
-        IconButton(   onPressed: () {
-          controller.play.value ? controller.pause() : controller.speak();
-        }, icon: Icon(controller.play.value ?CupertinoIcons.speaker_slash_fill:CupertinoIcons.speaker_2_fill)),
-        IconButton(onPressed: () {
-          controller.stop();
-        }, icon: Icon(CupertinoIcons.stop_fill)),
-      ],);
+        _buildLanguageDropdown(controller.outputlanguage, controller.inputlanguage),
+        const Spacer(),
+        PopupMenuButton<String>(
+          onSelected: (value) {
+            switch (value) {
+              case '1st to 3rd':
+                controller.speachRate.value = 0.3;
+                controller.pitch.value = 1.0;
+                controller.pause();
+                controller.initSetting(pitchv:1.0,speechv:  0.3);
+                // controller.speak();
+                break;
+              case '4th to 8th':
+                controller.speachRate.value = 0.5;
+                controller.pitch.value = 1.0;
+                controller.pause();
+                controller.initSetting(pitchv:1.0,speechv:  0.5);
+                // controller.speak();
+                break;
+              case '9th to 12th':
+                controller.speachRate.value = 0.6;
+                controller.pitch.value = 1.0;
+                controller.pause();
+                controller.initSetting(pitchv:1.0,speechv:  0.6);
+                // controller.speak();
+                break;
+            }
+            controller.initSetting();
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: '1st to 3rd',
+              child: Text('1st to 3rd'),
+            ),
+            const PopupMenuItem(
+              value: '4th to 8th',
+              child: Text('4th to 8th'),
+            ),
+            const PopupMenuItem(
+              value: '9th to 12th',
+              child: Text('9th to 12th'),
+            ),
+          ],
+          icon: const Icon(Icons.settings),
+        ),
+        IconButton(
+          onPressed: () {
+            controller.play.value ? controller.pause() : controller.speak();
+          },
+          icon: Icon(
+            controller.play.value
+                ? CupertinoIcons.speaker_slash_fill
+                : CupertinoIcons.speaker_2_fill,
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            controller.stop();
+          },
+          icon: const Icon(CupertinoIcons.stop_fill),
+        ),
+      ],
+    );
   }
 
   Widget _buildSliderSection(
@@ -85,16 +138,13 @@ class Myhomepage22 extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _buildLanguageDropdown(
-          controller.outputlanguage,
-          controller.inputlanguage,
-        ),
+        _buildLanguageDropdown(controller.outputlanguage, controller.inputlanguage),
       ],
     );
   }
 
   Widget _buildLanguageDropdown(
-     RxString selectedLanguage, RxString? inputlanguage) {
+      RxString selectedLanguage, RxString? inputlanguage) {
     return Obx(
           () => DropdownButton<String>(
         value: selectedLanguage.value,
@@ -121,9 +171,8 @@ class Myhomepage22 extends StatelessWidget {
         onChanged: (value) {
           if (value != null) {
             selectedLanguage.value = value;
-            final settings =
-                Languagecontroller.languageSettings[value] ??
-                    {'pitch': 1.0, 'rate': 1.0};
+            final settings = Languagecontroller.languageSettings[value] ??
+                {'pitch': 1.0, 'rate': 1.0};
             Languagecontroller.pitch.value = settings['pitch']!;
             Languagecontroller.speachRate.value = settings['rate']!;
             Languagecontroller.initSetting();
@@ -138,79 +187,86 @@ class Myhomepage22 extends StatelessWidget {
   Widget _buildTranslationDisplay(Transilator controller) {
     return Obx(
           () {
-            return Column(
-              children: [
-                Expanded(
-                  child: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Fixed "Original Text:"
-                          const Text(
-                            "Original Text:",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
+        return Column(
+          children: [
+            Expanded(
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Fixed "Original Text:"
+                      const Text(
+                        "Original Text:",
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
 
-                          // Scrollable content
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Text(
-                                controller.inputtext.value,
-                                style: const TextStyle(fontSize: 16),
-                              ),
+                      // Scrollable content
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Text(
+                            controller.inputtext.value,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (controller.isTranslating.value)
+                        const Center(
+                          child: CircularProgressIndicator(color: Color(0xFF1B6535)),
+                        )
+                      else ...[
+                        const Text(
+                          "Translated Text:",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            child: Text(
+                              controller.translatedText.value,
+                              style: const TextStyle(fontSize: 16),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
+                        _buildControlButtons(controller),
+                      ],
+                    ],
                   ),
                 ),
-                Expanded(
-                  child: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (controller.isTranslating.value)
-                            const Center(child: CircularProgressIndicator(color:  Color(0xFF1B6535)))
-                          else ...[
-                            const Text(
-                              "Translated Text:",
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(height: 8),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                child: Text(
-                                  controller.translatedText.value,
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                              ),
-                            ),
-                            _buildControlButtons(controller)
-                          ]
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            );
-          },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
+
 
 
 /// don't remove this code

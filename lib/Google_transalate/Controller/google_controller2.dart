@@ -22,18 +22,18 @@ class Transilator extends GetxController with WidgetsBindingObserver {
 
   final Map<String, Map<String, double>> languageSettings = {
     'en': {'pitch': 1.0, 'rate': 0.5},
-    'hi': {'pitch': 1.2, 'rate': 0.6},
-    'bn': {'pitch': 1.1, 'rate': 0.5},
+    'hi': {'pitch': 1.0, 'rate': 0.6},
+    'bn': {'pitch': 1.0, 'rate': 0.5},
     'te': {'pitch': 1.0, 'rate': 0.55},
-    'mr': {'pitch': 1.1, 'rate': 0.5},
+    'mr': {'pitch': 1.0, 'rate': 0.5},
     'ta': {'pitch': 1.0, 'rate': 0.6},
-    'gu': {'pitch': 1.2, 'rate': 0.5},
+    'gu': {'pitch': 1.0, 'rate': 0.5},
     'ur': {'pitch': 1.0, 'rate': 0.55},
-    'kn': {'pitch': 1.1, 'rate': 0.6},
+    'kn': {'pitch': 1.0, 'rate': 0.6},
     'or': {'pitch': 1.0, 'rate': 0.5},
-    'ml': {'pitch': 1.1, 'rate': 0.55},
+    'ml': {'pitch': 1.0, 'rate': 0.55},
     'pa': {'pitch': 1.0, 'rate': 0.5},
-    'as': {'pitch': 1.2, 'rate': 0.6},
+    'as': {'pitch': 1.0, 'rate': 0.6},
   };
 
   @override
@@ -81,10 +81,12 @@ class Transilator extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  void initSetting() async {
+  void initSetting({pitchv,speechv}) async {
+    var pitchv;
+    var speechv;
     await flutterTts.setVolume(1.0);
-    await flutterTts.setPitch(pitch.value);
-    await flutterTts.setSpeechRate(speachRate.value);
+    await flutterTts.setPitch(pitchv??pitch.value);
+    await flutterTts.setSpeechRate(speechv??speachRate.value);
     await flutterTts.setLanguage(outputlanguage.value);
   }
 
